@@ -71,6 +71,8 @@ export const ru: Record<TranslationKey, string> = {
   "channels.retry": "Повторить",
   "channels.openInApp": "Открыть",
   "channels.address": "Адрес канала",
+  "channels.listGlitch": "Список каналов отображается некорректно",
+  "channels.resetCache": "Обновить",
 
   // ── Settings panel ──
   "settings.title": "Настройки",
