@@ -742,7 +742,14 @@ export const en = {
 
   // ── Misc ──
   "chat.messageNotFound": "Message not found",
-  "chat.peerKeysMissing": "Peer hasn't published encryption keys yet. Messaging is temporarily unavailable.",
+  "chat.peerKeysMissing": "Peer hasn't published encryption keys yet — your messages will stay unencrypted until they do. You can retry now or republish your own keys.",
+  "chat.peerKeysRetry": "Retry",
+  "chat.republishKeys": "Republish my keys",
+  "chat.republishKeysInProgress": "Republishing…",
+  "chat.republishKeysSuccess": "Encryption keys republished",
+  "chat.republishKeysError": "Failed to republish keys",
+  "chat.republishKeysAlreadyOk": "Your keys are already published",
+  "chat.republishKeysNeedsFunds": "Not enough PKOIN to broadcast keys",
   "chat.unencryptedRoom": "Messages in this room are not encrypted",
   "tor.disable": "Disable Tor",
   "register.registrationFailed": "Registration failed",
