@@ -69,6 +69,8 @@ export const en = {
   "channels.retry": "Retry",
   "channels.openInApp": "Open",
   "channels.address": "Channel address",
+  "channels.listGlitch": "Channel list looks broken",
+  "channels.resetCache": "Refresh",
 
   // ── Settings panel ──
   "settings.title": "Settings",
