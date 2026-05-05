@@ -107,15 +107,34 @@ export const useChannelStore = defineStore("channel", () => {
       }
 
       blockHeight.value = result.height ?? blockHeight.value;
-      const parsed = (result.channels ?? []).map((raw: any) => parseChannel(raw));
 
-      if (reset) {
-        channels.value = parsed;
-      } else {
-        channels.value = [...channels.value, ...parsed];
+      // Drop entries with empty address or name. RecycleScroller uses
+      // address as key-field; empty / duplicate keys collide and Vue stops
+      // rendering the duplicates, leaving phantom empty slots in the list.
+      const rawParsed = (result.channels ?? []).map((raw: any) => parseChannel(raw));
+      const parsed = rawParsed.filter((c) => Boolean(c.address) && Boolean(c.name));
+      const pageHadFullCount = rawParsed.length >= 20;
+
+      // Dedup-by-address — page 0 and page 1 may overlap when a new channel
+      // appears between requests and shifts the offset, producing the same
+      // address in both pages.
+      const existingAddrs = new Set(
+        reset ? [] : channels.value.map((c) => c.address)
+      );
+      const fresh: Channel[] = [];
+      for (const channel of parsed) {
+        if (existingAddrs.has(channel.address)) continue;
+        existingAddrs.add(channel.address);
+        fresh.push(channel);
       }
 
-      hasMoreChannels.value = parsed.length >= 20;
+      if (reset) {
+        channels.value = fresh;
+      } else {
+        channels.value = [...channels.value, ...fresh];
+      }
+
+      hasMoreChannels.value = pageHadFullCount;
       channelsPage.value += 1;
     } catch (e) {
       console.error("[channel-store] fetchChannels error:", e);
