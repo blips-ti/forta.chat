@@ -5,6 +5,8 @@ import { useAuthStore } from "@/entities/auth";
 
 import type { Channel, ChannelPost } from "./types";
 
+const CHANNELS_PAGE_SIZE = 20;
+
 function tryDecode(val: unknown): string {
   if (typeof val !== "string") return "";
   try {
@@ -98,7 +100,7 @@ export const useChannelStore = defineStore("channel", () => {
         addr,
         blockHeight.value,
         channelsPage.value,
-        20
+        CHANNELS_PAGE_SIZE
       );
 
       if (!result) {
@@ -108,12 +110,16 @@ export const useChannelStore = defineStore("channel", () => {
 
       blockHeight.value = result.height ?? blockHeight.value;
 
-      // Drop entries with empty address or name. RecycleScroller uses
-      // address as key-field; empty / duplicate keys collide and Vue stops
-      // rendering the duplicates, leaving phantom empty slots in the list.
-      const rawParsed = (result.channels ?? []).map((raw: any) => parseChannel(raw));
+      // Drop entries with empty address or name (treated as broken-output,
+      // not "channel without a display name"). RecycleScroller uses address
+      // as key-field; empty / duplicate keys collide and Vue stops rendering
+      // the duplicates, leaving phantom empty slots in the list.
+      const rawList = (result.channels ?? []) as Array<Record<string, unknown>>;
+      const rawParsed = rawList.map((raw) => parseChannel(raw));
       const parsed = rawParsed.filter((c) => Boolean(c.address) && Boolean(c.name));
-      const pageHadFullCount = rawParsed.length >= 20;
+      // Use the raw page size, not the filtered size, so a partially-broken
+      // page doesn't prematurely stop pagination.
+      const pageHadFullCount = rawParsed.length >= CHANNELS_PAGE_SIZE;
 
       // Dedup-by-address — page 0 and page 1 may overlap when a new channel
       // appears between requests and shifts the offset, producing the same
